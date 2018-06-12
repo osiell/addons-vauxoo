@@ -19,68 +19,28 @@
 #
 ##############################################################################
 
-from openerp import models, api, fields, _
+from openerp import models, api, _
 from openerp.exceptions import Warning as UserError
-import openerp.addons.decimal_precision as dp
 
 
-class MrpProductProduct(models.TransientModel):
+class MrpProductProduce(models.TransientModel):
     _inherit = "mrp.product.produce"
 
-    @api.multi
-    def on_change_qty(self, product_qty, consume_lines):
-        """When changing the quantity of products to be produced it will
-        recalculate the number of raw materials needed according
-        to the scheduled products and the already consumed/produced products
-        It will return the consume lines needed for the products to be produced
-        which the user can still adapt
-        """
-        res = super(MrpProductProduct, self).on_change_qty(product_qty,
-                                                           consume_lines)
-        prod_obj = self.env["mrp.production"]
-        production = prod_obj.browse(self._context['active_id'])
-        if production.qty_available_to_produce < product_qty:
-            raise UserError(_('''You cannot produce more than available to
-                              produce for this order '''))
-
+    @api.model
+    def default_get(self, fields):
+        fields.append('product_qty')
+        res = super(MrpProductProduce, self).default_get(fields)
+        if self._context.get('active_id') and res.get('product_qty'):
+            production = self.env['mrp.production'].browse(
+                self._context['active_id'])
+            res['product_qty'] = (res['product_qty'] > 0 and
+                                  production.qty_available_to_produce)
         return res
-
-    @api.cr_uid_context
-    def _get_product_qty(self, cr, uid, context=None):
-        """ To obtain product quantity
-        @param self: The object pointer.
-        @param cr: A database cursor
-        @param uid: ID of the user currently logged in
-        @param context: A standard dictionary
-        @return: Quantity
-        """
-        if context is None:
-            context = {}
-        res = super(MrpProductProduct, self)._get_product_qty(cr, uid,
-                                                              context=context)
-        prod = self.pool.get('mrp.production').browse(cr, uid,
-                                                      context['active_id'],
-                                                      context=context)
-        return res > 0 and prod.qty_available_to_produce
-
-    product_qty = fields.Float('Select Quantity',
-                               default=_get_product_qty,
-                               digits_compute=dp.
-                               get_precision('Product Unit of Measure'),
-                               required=True)
 
     @api.multi
     def do_produce(self):
-        """Overwritten to show a message if someone try to produce more than
-        available to produce
-        """
-        production_id = self._context.get('active_id', False)
-        assert production_id, "Production Id should be specified "\
-            "in context as a Active ID."
-        production_brw = self.env['mrp.production'].browse(production_id)
-        for record in self:
-            if record.product_qty > production_brw.qty_available_to_produce:
-                raise UserError(_('''You cannot produce more than available to
-                                    produce for this order '''))
-
-        return super(MrpProductProduct, self).do_produce()
+        self.ensure_one()
+        if self.product_qty > self.production_id.qty_available_to_produce:
+            raise UserError(_('''You cannot produce more than available to
+                                produce for this order'''))
+        return super(MrpProductProduce, self).do_produce()

@@ -4,7 +4,7 @@
 
         <record id="product_product_18" model="product.product">
             <field name="name">Main Product A</field>
-            <field name="categ_id" ref="product.product_category_8"/>
+            <field name="categ_id" ref="product.product_category_5"/>
             <field name="standard_price">1020.0</field>
             <field name="list_price">1150.0</field>
             <field name="type">product</field>
@@ -16,7 +16,7 @@
 
         <record id="product_product_19" model="product.product">
             <field name="name">Component A for Product A</field>
-            <field name="categ_id" ref="product.product_category_8"/>
+            <field name="categ_id" ref="product.product_category_5"/>
             <field name="standard_price">1100.0</field>
             <field name="list_price">1250.0</field>
             <field name="type">product</field>
@@ -27,7 +27,7 @@
 
         <record id="product_product_20" model="product.product">
             <field name="name">Component B for Product A</field>
-            <field name="categ_id" ref="product.product_category_8"/>
+            <field name="categ_id" ref="product.product_category_5"/>
             <field name="standard_price">1700.0</field>
             <field name="list_price">1950.0</field>
             <field name="type">product</field>

@@ -23,7 +23,7 @@
 # ##############################################################################
 {
     "name": "MRP Partial Production",
-    "version": "8.0.0.1.6",
+    "version": "10.0.1.0",
     "author": "Vauxoo",
     "category": "",
     "website": "http://www.vauxoo.com/",
@@ -46,6 +46,6 @@
     "js": [],
     "css": [],
     "qweb": [],
-    "installable": False,
+    "installable": True,
     "auto_install": False,
 }

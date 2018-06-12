@@ -8,7 +8,7 @@
             <field name="partner_shipping_id" ref="base.res_partner_2"/>
             <field name="user_id" ref="base.user_demo"/>
             <field name="pricelist_id" ref="product.list0"/>
-            <field name="section_id" ref="sales_team.section_sales_department"/>
+            <field name="section_id" ref="sales_team.team_sales_department"/>
             <field name="date_order" eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d %H:%M')"/>
             <field name="order_policy">picking</field>
         </record>
@@ -23,7 +23,9 @@
             <field name="price_unit">2950.00</field>
         </record>
 
-        <workflow action="order_confirm" model="sale.order" ref="sale_order_1"/>
+        <function model="sale.order" name="action_confirm">
+            <function eval="[[('id', '=', ref('sale_order_1'))]]" model="sale.order" name="search"/>
+        </function>
         <function model="procurement.order" name="run_scheduler"/>
     </data>
 </openerp>
